@@ -15,7 +15,7 @@ class TaskSerializer(serializers.ModelSerializer):
                     'data_conclusao'
                 ]
 
-def update(self, instance, validated_data):
+    def update(self, instance, validated_data):
         # Atualiza data_conclusao se status mudar para concluído
         if validated_data.get('status') == 'C' and instance.status != 'C':
             validated_data['data_conclusao'] = timezone.now()
