@@ -1,26 +1,31 @@
 # API de Gerenciamento de Tarefas
 
-Esta API fornece um sistema de gerenciamento de tarefas, permitindo a criação, listagem, atualização e exclusão de tarefas.
+Esta API fornece um sistema de gerenciamento de tarefas, permitindo a criação, listagem, atualização e exclusão de tarefas. Agora com autenticação via **JWT** e documentação interativa com **Swagger**.
 
 ## Tecnologias Utilizadas
 
+- Django
 - Django Rest Framework (DRF)
+- JWT (`djangorestframework-simplejwt`)
+- Swagger (`drf-yasg`)
 - Python
-- Banco de dados relacional
+- Banco de dados relacional (SQLite por padrão)
+
+---
 
 ## Instalação e Configuração
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/seu-repositorio.git
-   cd seu-repositorio
+   git clone https://github.com/DiegoFChaggas/Tasks.git
+   cd Tasks
    ```
 
 2. Crie e ative um ambiente virtual:
    ```bash
    python -m venv venv
    source venv/bin/activate  # Linux/macOS
-   venv\Scripts\activate  # Windows
+   venv\Scripts\activate     # Windows
    ```
 
 3. Instale as dependências:
@@ -33,88 +38,84 @@ Esta API fornece um sistema de gerenciamento de tarefas, permitindo a criação,
    python manage.py migrate
    ```
 
-5. Execute o servidor:
+5. Crie um superusuário (opcional, mas recomendado):
+   ```bash
+   python manage.py createsuperuser
+   ```
+
+6. Execute o servidor:
    ```bash
    python manage.py runserver
    ```
 
+---
+
+## Autenticação com JWT
+
+A API utiliza JWT para proteger os endpoints. Para obter um token de acesso:
+
+1. Faça uma requisição `POST` para:
+   ```
+   /api/token/
+   ```
+
+   **Body da requisição:**
+   ```json
+   {
+     "username": "seu_usuario",
+     "password": "sua_senha"
+   }
+   ```
+
+2. O retorno conterá os tokens:
+   ```json
+   {
+     "refresh": "token_refresh",
+     "access": "token_access"
+   }
+   ```
+
+3. Para autenticar chamadas protegidas, envie o token no header:
+   ```
+   Authorization: Bearer seu_token_access
+   ```
+
+---
+
+## Swagger UI
+
+Documentação interativa disponível em:
+
+```
+/swagger/
+```
+
+Você pode autenticar-se diretamente por lá clicando em **Authorize** e fornecendo o token JWT no formato:
+
+```
+Bearer SEU_TOKEN
+```
+
+---
+
 ## Endpoints
 
-### 1. Listar Tarefas
-- **Endpoint:** `/tasks/`
-- **Método:** `GET`
-- **Resposta:**
-  ```json
-  [
-    {
-      "id": 1,
-      "titulo": "Exemplo de Tarefa",
-      "descricao": "Descrição da tarefa",
-      "status": "P",
-      "data_criacao": "2024-03-30T12:00:00Z",
-      "data_atualizacao": "2024-03-30T12:00:00Z",
-      "data_conclusao": null
-    }
-  ]
-  ```
+### 1. Listar Tarefas (requer autenticação)
+- **GET** `/api/v1/tasks/`
 
-### 2. Criar Tarefa
-- **Endpoint:** `/tasks/`
-- **Método:** `POST`
-- **Corpo da Requisição:**
-  ```json
-  {
-    "titulo": "Nova Tarefa",
-    "descricao": "Detalhes da nova tarefa",
-    "status": "P"
-  }
-  ```
-- **Resposta:**
-  ```json
-  {
-    "id": 2,
-    "titulo": "Nova Tarefa",
-    "descricao": "Detalhes da nova tarefa",
-    "status": "P",
-    "data_criacao": "2024-03-30T12:10:00Z",
-    "data_atualizacao": "2024-03-30T12:10:00Z",
-    "data_conclusao": null
-  }
-  ```
+### 2. Criar Tarefa (requer autenticação)
+- **POST** `/api/v1/tasks/`
 
-### 3. Detalhar Tarefa
-- **Endpoint:** `/tasks/{id}/`
-- **Método:** `GET`
-- **Exemplo de Resposta:**
-  ```json
-  {
-    "id": 1,
-    "titulo": "Exemplo de Tarefa",
-    "descricao": "Descrição da tarefa",
-    "status": "P",
-    "data_criacao": "2024-03-30T12:00:00Z",
-    "data_atualizacao": "2024-03-30T12:00:00Z",
-    "data_conclusao": null
-  }
-  ```
+### 3. Detalhar Tarefa (requer autenticação)
+- **GET** `/api/v1/tasks/{id}/`
 
-### 4. Atualizar Tarefa
-- **Endpoint:** `/tasks/{id}/`
-- **Método:** `PUT`
-- **Corpo da Requisição:**
-  ```json
-  {
-    "titulo": "Tarefa Atualizada",
-    "descricao": "Nova descrição",
-    "status": "E"
-  }
-  ```
-- **Nota:** Se o status for alterado para `C` (Concluída), a `data_conclusao` será preenchida automaticamente.
+### 4. Atualizar Tarefa (requer autenticação)
+- **PUT** `/api/v1/tasks/{id}/`
 
-### 5. Excluir Tarefa
-- **Endpoint:** `/tasks/{id}/`
-- **Método:** `DELETE`
-- **Resposta:** `204 No Content`
+### 5. Excluir Tarefa (requer autenticação)
+- **DELETE** `/api/v1/tasks/{id}/`
+
+---
 
 ## Estrutura do Projeto
 
@@ -133,7 +134,8 @@ Esta API fornece um sistema de gerenciamento de tarefas, permitindo a criação,
 │   ├── migrations/
 ```
 
+---
+
 ## Considerações Finais
 
-Esta API permite um gerenciamento eficiente de tarefas, oferecendo operações CRUD completas. Se tiver dúvidas ou sugestões, contribua com o projeto!
-
+Esta API agora oferece autenticação segura com JWT e uma interface amigável com Swagger para facilitar testes e integração. Sinta-se à vontade para contribuir ou enviar sugestões!
